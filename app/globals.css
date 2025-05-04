@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 240 249 255; /* #f0f9ff */
+    --foreground: 12 74 110;   /* #0c4a6e */
+    --primary: 79 70 229;      /* #4f46e5 */
+    --accent: 225 29 72;       /* #e11d48 */
+  }
+
+  .dark {
+    --background: 23 25 35;    /* #171923 */
+    --foreground: 209 213 219; /* #d1d5db */
+    --primary: 129 140 248;    /* #818cf8 */
+    --accent: 251 113 133;     /* #fb7185 */
+  }
+
+  body {
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))];
+  }
+}
+
+@layer components {
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+  
+  h1 {
+    @apply text-3xl md:text-5xl;
+  }
+  
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+  
+  .special-word {
+    @apply text-3xl;
+    background: linear-gradient(to top, rgb(var(--primary)) 30%, #0bd1d1 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+  }
+  
+  .special-word-1 {
+    @apply text-3xl;
+    background: linear-gradient(to top, rgb(var(--primary)) 30%, rgb(var(--accent)) 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+  }
+
+  /* Form styles for Create Blog and VapiWeatherBot */
+  .form-input {
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))] border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-[rgb(var(--foreground))] dark:border-gray-600 dark:focus:ring-[rgb(var(--primary))];
+  }
+
+  .form-button {
+    @apply bg-[rgb(var(--primary))] text-white rounded-md p-3 hover:bg-[rgb(var(--primary)/0.8)] dark:hover:bg-[rgb(165,180,252)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .form-select {
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))] border border-gray-600 dark:bg-gray-700 dark:text-[rgb(var(--foreground))] dark:border-gray-600 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500;
+  }
+
+  .form-file {
+    @apply text-gray-500 dark:text-gray-300;
+  }
+
+  .form-file-button {
+    @apply mr-4 py-2 px-4 rounded-full border-0 text-sm font-semibold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900 dark:text-indigo-200 dark:hover:bg-indigo-800;
+  }
+
+  /* Animation for fade-in effect */
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 1s ease-in forwards;
+  }
+
+  /* Intro text styles */
+  .intro-text {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+    font-size: 1.5rem;
+    color: #0c4a6e; /* Light theme */
+  }
+  
+  .dark .intro-text {
+    color: #67e8f9; /* Dark theme */
+  }
+
+  /* VapiWeatherBot specific styles */
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-2px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(2px);
+    }
+  }
+
+  .vibrate {
+    animation: shake 0.3s ease-in-out;
+  }
+
+  @keyframes cloud {
+    0% {
+      transform: translateX(0);
+      opacity: 0.8;
+    }
+    50% {
+      transform: translateX(10px);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 0.8;
+    }
+  }
+
+  .animate-cloud {
+    animation: cloud 2s ease-in-out infinite;
+  }
+
+  .tooltip {
+    position: relative;
+  }
+
+  .tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  .tab-panel {
+    animation: fade-in 0.3s ease-in;
+  }
+}
