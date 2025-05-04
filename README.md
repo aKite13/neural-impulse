@@ -1,6 +1,5 @@
 Neural Impulse
-A modern blog application built with Next.js 15.2.3, featuring user authentication, blog post management, commenting, liking, and a weather integration. The app uses MongoDB for data storage, Cloudinary for image uploads, and NextAuth.js for authentication.
-This project was bootstrapped with create-next-app.
+A modern blog application built with Next.js 15.2.3, featuring user authentication, blog post management, commenting, liking, and a weather integration. The app uses MongoDB for data storage, Cloudinary for image uploads, and NextAuth.js for authentication. This project was bootstrapped with create-next-app.
 Features
 
 User authentication (signup, login, profile editing)
@@ -28,7 +27,7 @@ Git
 
 Installation
 
-Clone the repository:git clone https://github.com/your-username/neural-impulse.git
+Clone the repository:git clone https://github.com/a leyenda/neural-impulse.git
 cd neural-impulse
 
 Install dependencies:npm install
