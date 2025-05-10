@@ -8,7 +8,7 @@ interface BlogDetailsProps {
 }
 
 async function fetchBlogData(id: string): Promise<IBlogClient> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"; // Замените на ваш порт, если нужно
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://neural-impulse.vercel.app"; // Замените на ваш порт, если нужно
   const url = `${baseUrl}/api/blog/${id}`;
   console.log("Fetching blog from URL:", url);
 
