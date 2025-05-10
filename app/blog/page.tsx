@@ -3,6 +3,7 @@
 import React from "react";
 import FirstBlog from "../components/FirstBlog";
 import OtherBlogs from "../components/OtherBlogs";
+import { getApiUrl } from './../lib/api';
 
 interface Blog {
   _id: string;
@@ -20,61 +21,9 @@ interface Blog {
 }
 
 
-
-
-
-// async function fetchBlogs(): Promise<Blog[]> {
-//   try {
-//     const url = `${process.env.NEXTAUTH_URL}/api/blog`;
-//     console.log("Fetching blogs from:", url);
-//     const res = await fetch(url, {
-//       method: "GET",
-//       cache: "no-store",
-//       next: { revalidate: 0 },
-//     });
-
-//     if (!res.ok) {
-//       throw new Error(`Failed to fetch blogs: ${res.status} ${res.statusText}`);
-//     }
-
-//     const data: Blog[] = await res.json();
-//     console.log("Fetched blogs:", data);
-//     return data;
-//   } catch (error) {
-//     console.error("Error fetching blogs:", error);
-//     return [];
-//   }
-// }
-
-// async function fetchBlogs(): Promise<Blog[]> {
-//   try {
-//     const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/blog`;
-//     console.log("Fetching blogs from:", url);
-    
-//     const res = await fetch(url, {
-//       method: "GET",
-//       cache: "no-store",
-//       headers: {
-//         'Content-Type': 'application/json'
-//       }
-//     });
-
-//     if (!res.ok) {
-//       const errorData = await res.json();
-//       console.error("API Error:", errorData);
-//       throw new Error(errorData.message || 'Failed to fetch blogs');
-//     }
-
-//     return await res.json();
-//   } catch (error) {
-//     console.error("Network Error:", error);
-//     throw error; // Перебрасываем ошибку для обработки в компоненте
-//   }
-// }
 async function fetchBlogs(): Promise<Blog[]> {
   try {
-    // Всегда используем относительный путь
-    const res = await fetch('/api/blog', {
+    const res = await fetch(getApiUrl('/api/blog'), {
       method: "GET",
       cache: "no-store",
       headers: { 'Content-Type': 'application/json' }
@@ -84,12 +33,9 @@ async function fetchBlogs(): Promise<Blog[]> {
     return await res.json();
   } catch (error) {
     console.error("Fetch error:", error);
-    throw new Error('Failed to load blogs');
+    throw new Error('Failed to load blogs. Please try again later.');
   }
 }
-
-
-
 export const dynamic = "force-dynamic"; // Указываем, что страница динамическая
 
 const BlogPage = async () => {
