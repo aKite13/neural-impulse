@@ -19,6 +19,10 @@ interface Blog {
   };
 }
 
+
+
+
+
 // async function fetchBlogs(): Promise<Blog[]> {
 //   try {
 //     const url = `${process.env.NEXTAUTH_URL}/api/blog`;
@@ -44,26 +48,31 @@ interface Blog {
 
 async function fetchBlogs(): Promise<Blog[]> {
   try {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/blog`;
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/blog`;
     console.log("Fetching blogs from:", url);
+    
     const res = await fetch(url, {
       method: "GET",
       cache: "no-store",
-      next: { revalidate: 0 },
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch blogs: ${res.status} ${res.statusText}`);
+      const errorData = await res.json();
+      console.error("API Error:", errorData);
+      throw new Error(errorData.message || 'Failed to fetch blogs');
     }
 
-    const data: Blog[] = await res.json();
-    console.log("Fetched blogs:", data);
-    return data;
+    return await res.json();
   } catch (error) {
-    console.error("Error fetching blogs:", error);
-    return [];
+    console.error("Network Error:", error);
+    throw error; // Перебрасываем ошибку для обработки в компоненте
   }
 }
+
+
 
 
 export const dynamic = "force-dynamic"; // Указываем, что страница динамическая
