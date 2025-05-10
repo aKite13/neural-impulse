@@ -46,32 +46,53 @@ interface Blog {
 //   }
 // }
 
+// async function fetchBlogs(): Promise<Blog[]> {
+//   try {
+//     const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/blog`;
+//     console.log("Fetching blogs from:", url);
+    
+//     const res = await fetch(url, {
+//       method: "GET",
+//       cache: "no-store",
+//       headers: {
+//         'Content-Type': 'application/json'
+//       }
+//     });
+
+//     if (!res.ok) {
+//       const errorData = await res.json();
+//       console.error("API Error:", errorData);
+//       throw new Error(errorData.message || 'Failed to fetch blogs');
+//     }
+
+//     return await res.json();
+//   } catch (error) {
+//     console.error("Network Error:", error);
+//     throw error; // Перебрасываем ошибку для обработки в компоненте
+//   }
+// }
 async function fetchBlogs(): Promise<Blog[]> {
   try {
-    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/blog`;
-    console.log("Fetching blogs from:", url);
+    // Для production используем абсолютный URL, для разработки — относительный
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+    const apiUrl = `${baseUrl}/api/blog`.replace('//api', '/api'); // Фикс для разработки
     
-    const res = await fetch(url, {
+    console.log("Fetching blogs from:", apiUrl);
+    
+    const res = await fetch(apiUrl, {
       method: "GET",
       cache: "no-store",
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: { 'Content-Type': 'application/json' }
     });
 
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.error("API Error:", errorData);
-      throw new Error(errorData.message || 'Failed to fetch blogs');
-    }
-
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     return await res.json();
+    
   } catch (error) {
-    console.error("Network Error:", error);
-    throw error; // Перебрасываем ошибку для обработки в компоненте
+    console.error("Fetch error:", error);
+    throw new Error('Failed to load blogs. Please try again later.');
   }
 }
-
 
 
 
