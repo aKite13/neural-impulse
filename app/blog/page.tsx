@@ -19,9 +19,32 @@ interface Blog {
   };
 }
 
+// async function fetchBlogs(): Promise<Blog[]> {
+//   try {
+//     const url = `${process.env.NEXTAUTH_URL}/api/blog`;
+//     console.log("Fetching blogs from:", url);
+//     const res = await fetch(url, {
+//       method: "GET",
+//       cache: "no-store",
+//       next: { revalidate: 0 },
+//     });
+
+//     if (!res.ok) {
+//       throw new Error(`Failed to fetch blogs: ${res.status} ${res.statusText}`);
+//     }
+
+//     const data: Blog[] = await res.json();
+//     console.log("Fetched blogs:", data);
+//     return data;
+//   } catch (error) {
+//     console.error("Error fetching blogs:", error);
+//     return [];
+//   }
+// }
+
 async function fetchBlogs(): Promise<Blog[]> {
   try {
-    const url = `${process.env.NEXTAUTH_URL}/api/blog`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/api/blog`;
     console.log("Fetching blogs from:", url);
     const res = await fetch(url, {
       method: "GET",
@@ -41,6 +64,7 @@ async function fetchBlogs(): Promise<Blog[]> {
     return [];
   }
 }
+
 
 export const dynamic = "force-dynamic"; // Указываем, что страница динамическая
 
