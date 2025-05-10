@@ -73,13 +73,8 @@ interface Blog {
 // }
 async function fetchBlogs(): Promise<Blog[]> {
   try {
-    // Для production используем абсолютный URL, для разработки — относительный
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
-    const apiUrl = `${baseUrl}/api/blog`.replace('//api', '/api'); // Фикс для разработки
-    
-    console.log("Fetching blogs from:", apiUrl);
-    
-    const res = await fetch(apiUrl, {
+    // Всегда используем относительный путь
+    const res = await fetch('/api/blog', {
       method: "GET",
       cache: "no-store",
       headers: { 'Content-Type': 'application/json' }
@@ -87,10 +82,9 @@ async function fetchBlogs(): Promise<Blog[]> {
 
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     return await res.json();
-    
   } catch (error) {
     console.error("Fetch error:", error);
-    throw new Error('Failed to load blogs. Please try again later.');
+    throw new Error('Failed to load blogs');
   }
 }
 
