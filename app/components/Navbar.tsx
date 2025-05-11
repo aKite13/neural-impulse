@@ -1,36 +1,36 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect, useRef } from "react";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import { useTheme } from "next-themes";
-import { FaSun, FaMoon } from "react-icons/fa";
+import React, { useState, useEffect, useRef } from "react"
+import { useSession, signOut } from "next-auth/react"
+import { useRouter, usePathname } from "next/navigation"
+import Link from "next/link"
+import Image from "next/image"
+import { useTheme } from "next-themes"
+import { FaSun, FaMoon } from "react-icons/fa"
 
 const Navbar: React.FC = () => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
-  const [showMenu, setShowMenu] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const menuRef = useRef<HTMLLIElement>(null);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
-  const mobileButtonRef = useRef<HTMLButtonElement>(null); // Новый реф для кнопки
-  const demoImage = "/mern.png";
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const pathname = usePathname()
+  const { theme, setTheme } = useTheme()
+  const [showMenu, setShowMenu] = useState(false)
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+  const menuRef = useRef<HTMLLIElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+  const mobileButtonRef = useRef<HTMLButtonElement>(null) // Новый реф для кнопки
+  const demoImage = "/mern.png"
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
+      const target = event.target as Node
       // Не закрываем, если клик был по кнопке открытия/закрытия
       if (mobileButtonRef.current && mobileButtonRef.current.contains(target)) {
-        return;
+        return
       }
       // Закрываем только если меню открыто и клик вне его
       if (
@@ -38,47 +38,57 @@ const Navbar: React.FC = () => {
         mobileMenuRef.current &&
         !mobileMenuRef.current.contains(target)
       ) {
-        setShowMobileMenu(false);
-        console.log("Closed by click outside");
+        setShowMobileMenu(false)
+        console.log("Closed by click outside")
       }
       if (menuRef.current && !menuRef.current.contains(target)) {
-        setShowMenu(false);
+        setShowMenu(false)
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showMobileMenu]); // Зависимость от состояния меню
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [showMobileMenu]) // Зависимость от состояния меню
 
   useEffect(() => {
-    console.log("showMobileMenu updated to:", showMobileMenu);
-  }, [showMobileMenu]);
+    console.log("showMobileMenu updated to:", showMobileMenu)
+  }, [showMobileMenu])
 
   const handleMobileMenuClick = () => {
-    console.log("Mobile menu clicked, current state:", showMobileMenu);
+    console.log("Mobile menu clicked, current state:", showMobileMenu)
     if (showMobileMenu) {
-      setShowMobileMenu(false);
-      console.log("Closing mobile menu, new state:", false);
+      setShowMobileMenu(false)
+      console.log("Closing mobile menu, new state:", false)
     } else {
-      setShowMobileMenu(true);
-      console.log("Opening mobile menu, new state:", true);
+      setShowMobileMenu(true)
+      console.log("Opening mobile menu, new state:", true)
     }
-  };
+  }
 
   const closeMobileMenu = () => {
-    setShowMobileMenu(false);
-    console.log("CloseMobileMenu called, new state:", false);
-  };
+    setShowMobileMenu(false)
+    console.log("CloseMobileMenu called, new state:", false)
+  }
 
   const handleLogout = async () => {
-    await signOut({ redirect: false });
-    setShowMenu(false);
-    setShowMobileMenu(false);
-    router.push("/");
-  };
+    await signOut({ redirect: false })
+    setShowMenu(false)
+    setShowMobileMenu(false)
+    router.push("/")
+  }
+
+  const handleProfileClick = () => {
+    if (status === "authenticated") {
+      setShowMenu(false)
+      setShowMobileMenu(false)
+      router.push("/profile/edit")
+    } else {
+      router.push("/login?callbackUrl=/profile/edit")
+    }
+  }
 
   const renderAvatar = () => {
     if (status === "loading") {
-      return <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />;
+      return <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
     }
     if (status === "authenticated" && session?.user) {
       return (
@@ -90,21 +100,21 @@ const Navbar: React.FC = () => {
           priority
           className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-700"
         />
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
   const renderThemeToggle = () => {
     if (!isMounted) {
-      return <div className="w-8 h-8" />;
+      return <div className="w-8 h-8" />
     }
-    const isDarkTheme = theme === "dark";
+    const isDarkTheme = theme === "dark"
     return (
       <button
         onClick={() => {
-          setTheme(isDarkTheme ? "light" : "dark");
-          closeMobileMenu();
+          setTheme(isDarkTheme ? "light" : "dark")
+          closeMobileMenu()
         }}
         className="p-2 rounded-full transition-colors cursor-pointer"
         style={
@@ -112,16 +122,24 @@ const Navbar: React.FC = () => {
             ? { backgroundColor: "#4b5563", color: "#a78bfa" }
             : { backgroundColor: "#e0e7ff", color: "#facc15" }
         }
-        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = isDarkTheme ? "#6b7280" : "#c7d2fe")}
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = isDarkTheme ? "#4b5563" : "#e0e7ff")}
+        onMouseOver={(e) =>
+          (e.currentTarget.style.backgroundColor = isDarkTheme
+            ? "#6b7280"
+            : "#c7d2fe")
+        }
+        onMouseOut={(e) =>
+          (e.currentTarget.style.backgroundColor = isDarkTheme
+            ? "#4b5563"
+            : "#e0e7ff")
+        }
         aria-label="Toggle theme"
       >
         {isDarkTheme ? <FaSun /> : <FaMoon />}
       </button>
-    );
-  };
+    )
+  }
 
-  const isDarkTheme = isMounted ? theme === "dark" : false;
+  const isDarkTheme = isMounted ? theme === "dark" : false
 
   return (
     <nav
@@ -176,14 +194,13 @@ const Navbar: React.FC = () => {
                 </div>
                 {showMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
-                    <Link
-                      href="/profile/edit"
-                      className="block px-4 py-2 text-sm text-gray-700
-											hover:text-blue-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      onClick={() => setShowMenu(false)}
+                    <button
+                      onClick={handleProfileClick}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700
+                        hover:text-blue-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       Profile
-                    </Link>
+                    </button>
                     <button
                       type="button"
                       className="block w-full text-left px-4 py-2 text-sm
@@ -265,8 +282,8 @@ const Navbar: React.FC = () => {
           <div className="px-4 py-2 space-y-2">
             <button
               onClick={() => {
-                setTheme(theme === "dark" ? "light" : "dark");
-                closeMobileMenu();
+                setTheme(theme === "dark" ? "light" : "dark")
+                closeMobileMenu()
               }}
               className="w-full flex justify-start px-4 py-2 rounded-md transition-colors "
               style={
@@ -274,12 +291,24 @@ const Navbar: React.FC = () => {
                   ? { backgroundColor: "#4b5563", color: "#a78bfa" }
                   : { backgroundColor: "#e0e7ff", color: "#facc15" }
               }
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = isDarkTheme ? "#6b7280" : "#c7d2fe")}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = isDarkTheme ? "#4b5563" : "#e0e7ff")}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor = isDarkTheme
+                  ? "#6b7280"
+                  : "#c7d2fe")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor = isDarkTheme
+                  ? "#4b5563"
+                  : "#e0e7ff")
+              }
               aria-label="Toggle theme"
             >
               {isMounted && theme !== undefined ? (
-                theme === "dark" ? <FaSun /> : <FaMoon />
+                theme === "dark" ? (
+                  <FaSun />
+                ) : (
+                  <FaMoon />
+                )
               ) : (
                 <div className="w-5 h-5" />
               )}
@@ -294,8 +323,14 @@ const Navbar: React.FC = () => {
                   : { color: "#8b5cf6", backgroundColor: "transparent" }
               }
               onClick={closeMobileMenu}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = isDarkTheme ? "#4b5563" : "#e0e7ff")}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor = isDarkTheme
+                  ? "#4b5563"
+                  : "#e0e7ff")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor = "transparent")
+              }
             >
               Blog
             </Link>
@@ -310,25 +345,36 @@ const Navbar: React.FC = () => {
                       : { color: "#8b5cf6", backgroundColor: "transparent" }
                   }
                   onClick={closeMobileMenu}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = isDarkTheme ? "#4b5563" : "#e0e7ff")}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                  onMouseOver={(e) =>
+                    (e.currentTarget.style.backgroundColor = isDarkTheme
+                      ? "#4b5563"
+                      : "#e0e7ff")
+                  }
+                  onMouseOut={(e) =>
+                    (e.currentTarget.style.backgroundColor = "transparent")
+                  }
                 >
                   Create
                 </Link>
-                <Link
-                  href="/profile/edit"
-                  className="block px-4 py-2 rounded-md"
+                <button
+                  onClick={handleProfileClick}
+                  className="block w-full text-left px-4 py-2 rounded-md"
                   style={
                     isDarkTheme
                       ? { color: "#a78bfa", backgroundColor: "transparent" }
                       : { color: "#8b5cf6", backgroundColor: "transparent" }
                   }
-                  onClick={closeMobileMenu}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = isDarkTheme ? "#4b5563" : "#e0e7ff")}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                  onMouseOver={(e) =>
+                    (e.currentTarget.style.backgroundColor = isDarkTheme
+                      ? "#4b5563"
+                      : "#e0e7ff")
+                  }
+                  onMouseOut={(e) =>
+                    (e.currentTarget.style.backgroundColor = "transparent")
+                  }
                 >
                   Profile
-                </Link>
+                </button>
                 <button
                   type="button"
                   className="block w-full text-left px-4 py-2 rounded-md "
@@ -338,8 +384,14 @@ const Navbar: React.FC = () => {
                       : { color: "#8b5cf6", backgroundColor: "transparent" }
                   }
                   onClick={handleLogout}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = isDarkTheme ? "#4b5563" : "#e0e7ff")}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                  onMouseOver={(e) =>
+                    (e.currentTarget.style.backgroundColor = isDarkTheme
+                      ? "#4b5563"
+                      : "#e0e7ff")
+                  }
+                  onMouseOut={(e) =>
+                    (e.currentTarget.style.backgroundColor = "transparent")
+                  }
                 >
                   Logout
                 </button>
@@ -349,8 +401,8 @@ const Navbar: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    router.push("/login");
-                    closeMobileMenu();
+                    router.push("/login")
+                    closeMobileMenu()
                   }}
                   className="w-full px-4 py-2 rounded-md transition-colors"
                   style={
@@ -359,10 +411,14 @@ const Navbar: React.FC = () => {
                       : { backgroundColor: "#3b82f6", color: "#ffffff" }
                   }
                   onMouseOver={(e) =>
-                    (e.currentTarget.style.backgroundColor = isDarkTheme ? "#3b82f6" : "#2563eb")
+                    (e.currentTarget.style.backgroundColor = isDarkTheme
+                      ? "#3b82f6"
+                      : "#2563eb")
                   }
                   onMouseOut={(e) =>
-                    (e.currentTarget.style.backgroundColor = isDarkTheme ? "#60a5fa" : "#3b82f6")
+                    (e.currentTarget.style.backgroundColor = isDarkTheme
+                      ? "#60a5fa"
+                      : "#3b82f6")
                   }
                 >
                   Log In
@@ -370,8 +426,8 @@ const Navbar: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    router.push("/signup");
-                    closeMobileMenu();
+                    router.push("/signup")
+                    closeMobileMenu()
                   }}
                   className="w-full px-4 py-2 rounded-md transition-colors"
                   style={
@@ -380,10 +436,14 @@ const Navbar: React.FC = () => {
                       : { backgroundColor: "#3b82f6", color: "#ffffff" }
                   }
                   onMouseOver={(e) =>
-                    (e.currentTarget.style.backgroundColor = isDarkTheme ? "#3b82f6" : "#2563eb")
+                    (e.currentTarget.style.backgroundColor = isDarkTheme
+                      ? "#3b82f6"
+                      : "#2563eb")
                   }
                   onMouseOut={(e) =>
-                    (e.currentTarget.style.backgroundColor = isDarkTheme ? "#60a5fa" : "#3b82f6")
+                    (e.currentTarget.style.backgroundColor = isDarkTheme
+                      ? "#60a5fa"
+                      : "#3b82f6")
                   }
                 >
                   Sign Up
@@ -394,7 +454,7 @@ const Navbar: React.FC = () => {
         </div>
       )}
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
