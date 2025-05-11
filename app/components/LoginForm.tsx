@@ -2,15 +2,16 @@
 
 import Input from "../components/Input"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react" // Добавляем Suspense
 import { signIn, useSession } from "next-auth/react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useTheme } from "next-themes"
 
-const LoginForm = () => {
+// Компонент, который использует useSearchParams
+const LoginFormContent = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams() // useSearchParams используется здесь
   const { theme } = useTheme()
   const { status, data: session } = useSession()
   const [formData, setFormData] = useState({
@@ -127,13 +128,22 @@ const LoginForm = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
         <p className="text-center dark:font-semibold" style={isDarkTheme ? { color: "rgb(var(--primary))" } : undefined}>
-          Don&rsquo;t have an account?{" "}
+          Don’t have an account?{" "}
           <Link className="text-red-700" href="/signup">
             Sign up
           </Link>
         </p>
       </form>
     </section>
+  )
+}
+
+// Основной компонент с Suspense
+const LoginForm = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginFormContent />
+    </Suspense>
   )
 }
 
