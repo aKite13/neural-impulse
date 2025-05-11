@@ -4,12 +4,13 @@ import Input from "../components/Input"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { signIn, useSession } from "next-auth/react"
-import { useRouter, usePathname } from "next/navigation" // Добавляем usePathname
+import { useRouter, usePathname, useSearchParams } from "next/navigation" // Добавляем useSearchParams
 import { useTheme } from "next-themes"
 
 const LoginForm = () => {
   const router = useRouter()
-  const pathname = usePathname() // Получаем текущий путь
+  const pathname = usePathname() // Текущий путь
+  const searchParams = useSearchParams() // Параметры URL
   const { theme } = useTheme()
   const { status } = useSession()
   const [formData, setFormData] = useState({
@@ -21,9 +22,10 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (status === "authenticated" && pathname === "/login") {
-      router.replace("/blog")
+      const callbackUrl = searchParams.get("callbackUrl") || "/blog" // Используем callbackUrl или /blog
+      router.replace(callbackUrl)
     }
-  }, [status, router, pathname]) // Добавляем pathname в зависимости
+  }, [status, router, pathname, searchParams])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -48,7 +50,8 @@ const LoginForm = () => {
       if (result?.error) {
         setError(result.error)
       } else {
-        router.replace("/blog")
+        const callbackUrl = searchParams.get("callbackUrl") || "/blog" // Используем callbackUrl после входа
+        router.replace(callbackUrl)
       }
     } catch {
       setError("Network error. Please try again.")
@@ -65,7 +68,7 @@ const LoginForm = () => {
     return null
   }
 
-  const isDarkTheme = theme === "dark";
+  const isDarkTheme = theme === "dark"
 
   return (
     <section className="flex items-center justify-center mt-30">
