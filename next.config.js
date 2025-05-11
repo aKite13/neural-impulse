@@ -41,6 +41,19 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: "/.well-known/:path*",
+        headers: [{ key: "Access-Control-Allow-Origin", value: "*" }],
+      },
+    ]
+  },
+  // Добавляем обработку favicon
+  async rewrites() {
+    return [
+      {
+        source: "/favicon.ico",
+        destination: "/favicon.ico",
+      },
     ]
   },
 }
