@@ -4,12 +4,13 @@ import Input from "../components/Input"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { signIn, useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation" // Добавляем usePathname
 import { useTheme } from "next-themes"
 
 const LoginForm = () => {
   const router = useRouter()
-	const { theme } = useTheme()
+  const pathname = usePathname() // Получаем текущий путь
+  const { theme } = useTheme()
   const { status } = useSession()
   const [formData, setFormData] = useState({
     email: "",
@@ -19,10 +20,10 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === "authenticated" && pathname === "/login") {
       router.replace("/blog")
     }
-  }, [status, router])
+  }, [status, router, pathname]) // Добавляем pathname в зависимости
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -64,7 +65,7 @@ const LoginForm = () => {
     return null
   }
 
-	const isDarkTheme = theme === "dark"; // Определяем, тёмная ли тема
+  const isDarkTheme = theme === "dark";
 
   return (
     <section className="flex items-center justify-center mt-30">
@@ -72,9 +73,7 @@ const LoginForm = () => {
         onSubmit={handleSubmit}
         className="border-2 border-indigo-700 rounded-lg max-w-sm mx-auto px-8 py-6 space-y-5 bg-teal-100"
       >
-        <h2 className="special-word-1 text-center" >
-          Login
-        </h2>
+        <h2 className="special-word-1 text-center">Login</h2>
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             {error}
@@ -87,8 +86,8 @@ const LoginForm = () => {
           value={formData.email}
           onChange={handleChange}
           placeholder="Enter your email"
-					className="form-input"
-					isDark={isDarkTheme}
+          className="form-input"
+          isDark={isDarkTheme}
         />
         <Input
           label="Password"
@@ -97,8 +96,8 @@ const LoginForm = () => {
           value={formData.password}
           onChange={handleChange}
           placeholder="Enter your password"
-					className="form-input"
-					isDark={isDarkTheme}
+          className="form-input"
+          isDark={isDarkTheme}
         />
         <button
           type="submit"
