@@ -189,9 +189,10 @@ const Navbar: React.FC = () => {
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700
                         hover:text-blue-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       // onClick={() => setShowMenu(false)}
-											onClick={() => {
-												console.log("Desktop menu: Navigating to /profile/edit");
-												setShowMenu(false);
+										  onClick={(e) => {
+												e.preventDefault() // Добавьте это для контроля навигации
+												router.push('/profile/edit')
+												setShowMenu(false)
 											}}
                     >
                       Profile
