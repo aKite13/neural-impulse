@@ -16,11 +16,6 @@ const nextConfig = {
         destination: "/profile/edit",
         permanent: true,
       },
-      {
-        source: "/profile/edit",
-        destination: "/profile/edit",
-        permanent: false,
-      },
     ]
   },
   async headers() {
@@ -47,7 +42,6 @@ const nextConfig = {
       },
     ]
   },
-  // Добавляем обработку favicon
   async rewrites() {
     return [
       {

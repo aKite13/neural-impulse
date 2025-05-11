@@ -4,13 +4,13 @@ import Input from "../components/Input"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { signIn, useSession } from "next-auth/react"
-import { useRouter, usePathname, useSearchParams } from "next/navigation" // Добавляем useSearchParams
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { useTheme } from "next-themes"
 
 const LoginForm = () => {
   const router = useRouter()
-  const pathname = usePathname() // Текущий путь
-  const searchParams = useSearchParams() // Параметры URL
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { theme } = useTheme()
   const { status } = useSession()
   const [formData, setFormData] = useState({
@@ -22,7 +22,8 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (status === "authenticated" && pathname === "/login") {
-      const callbackUrl = searchParams.get("callbackUrl") || "/profile/edit"
+      const callbackUrl = searchParams.get("callbackUrl") || "/blog"
+      console.log("LoginForm: Authenticated, redirecting to:", callbackUrl)
       router.replace(callbackUrl)
     }
   }, [status, router, pathname, searchParams])
@@ -50,7 +51,8 @@ const LoginForm = () => {
       if (result?.error) {
         setError(result.error)
       } else {
-        const callbackUrl = searchParams.get("callbackUrl") || "/profile/edit" // Изменяем дефолтный редирект
+        const callbackUrl = searchParams.get("callbackUrl") || "/blog"
+        console.log("LoginForm: Successful login, redirecting to:", callbackUrl)
         router.replace(callbackUrl)
       }
     } catch {
@@ -109,10 +111,7 @@ const LoginForm = () => {
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-        <p
-          className="text-center dark:font-semibold"
-          style={isDarkTheme ? { color: "rgb(var(--primary))" } : undefined}
-        >
+        <p className="text-center dark:font-semibold" style={isDarkTheme ? { color: "rgb(var(--primary))" } : undefined}>
           Don&apos;t have an account?{" "}
           <Link className="text-red-700" href="/signup">
             Sign up
