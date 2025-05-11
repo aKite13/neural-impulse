@@ -1,94 +1,98 @@
+"use client"
 
-"use client";
-
-import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
+import React, { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useTheme } from "next-themes"
 
 const ProfileEdit: React.FC = () => {
-  const { data: session, status, update } = useSession();
-  const router = useRouter();
-  const { theme } = useTheme();
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [name, setName] = useState("");
-  const [designation, setDesignation] = useState("");
-  const [deleteAvatar, setDeleteAvatar] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFormReset, setIsFormReset] = useState(false);
-  const demoImage = "/mern.png";
+  const { data: session, status, update } = useSession()
+  const router = useRouter()
+  const { theme } = useTheme()
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [name, setName] = useState("")
+  const [designation, setDesignation] = useState("")
+  const [deleteAvatar, setDeleteAvatar] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [isFormReset, setIsFormReset] = useState(false)
+  const demoImage = "/mern.png"
 
   // Перенаправление при отсутствии авторизации
   useEffect(() => {
     if (status === "unauthenticated") {
-      console.log("User unauthenticated, redirecting to /login");
-      router.push("/login");
+      console.log("User unauthenticated, redirecting to /login")
+      router.push("/login")
     }
-  }, [status, router]);
+  }, [status, router])
 
   // Инициализация формы при загрузке сессии
   useEffect(() => {
-    console.log("useEffect triggered, status:", status, "isFormReset:", isFormReset);
+    console.log(
+      "useEffect triggered, status:",
+      status,
+      "isFormReset:",
+      isFormReset
+    )
     if (session?.user && !isFormReset) {
-      console.log("Session loaded:", session);
-      setName(session.user.name || "");
-      setDesignation(session.user.designation || "");
-      setPreviewUrl(session.user.avatar?.url || null);
-      setDeleteAvatar(false);
+      console.log("Session loaded:", session)
+      setName(session.user.name || "")
+      setDesignation(session.user.designation || "")
+      setPreviewUrl(session.user.avatar?.url || null)
+      setDeleteAvatar(false)
     }
-  }, [session, status, isFormReset]);
+  }, [session, status, isFormReset])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        setError("File size exceeds 5MB.");
-        return;
+        setError("File size exceeds 5MB.")
+        return
       }
       if (!file.type.startsWith("image/")) {
-        setError("Please upload an image file.");
-        return;
+        setError("Please upload an image file.")
+        return
       }
-      setAvatarFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-      setDeleteAvatar(false);
-      setError("");
+      setAvatarFile(file)
+      setPreviewUrl(URL.createObjectURL(file))
+      setDeleteAvatar(false)
+      setError("")
     }
-  };
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("handleSubmit called");
+    e.preventDefault()
+    console.log("handleSubmit called")
     if (!name.trim()) {
-      setError("Name is required.");
-      return;
+      setError("Name is required.")
+      return
     }
     if (!session?.user?._id) {
-      setError("User ID is missing. Please log in again.");
-      router.push("/login");
-      return;
+      setError("User ID is missing. Please log in again.")
+      router.push("/login")
+      return
     }
 
-    setIsLoading(true);
-    setError("");
-    setSuccess("");
+    setIsLoading(true)
+    setError("")
+    setSuccess("")
 
-    const formData = new FormData();
-    if (avatarFile) formData.append("avatar", avatarFile);
-    formData.append("name", name.trim());
-    formData.append("designation", designation.trim());
-    formData.append("deleteAvatar", deleteAvatar.toString());
+    const formData = new FormData()
+    if (avatarFile) formData.append("avatar", avatarFile)
+    formData.append("name", name.trim())
+    formData.append("designation", designation.trim())
+    formData.append("deleteAvatar", deleteAvatar.toString())
 
     console.log("Sending form data:", {
       name,
       designation,
       deleteAvatar,
       avatarFile: avatarFile ? avatarFile.name : null,
-    });
+    })
 
     try {
       const response = await fetch(`/api/user/${session.user._id}`, {
@@ -97,69 +101,74 @@ const ProfileEdit: React.FC = () => {
           Authorization: `Bearer ${session.user.accessToken}`,
         },
         body: formData,
-      });
+      })
 
-      console.log("Response status:", response.status);
+      console.log("Response status:", response.status)
 
       if (response.ok) {
-        const data = await response.json();
-        console.log("Response data:", data);
-        const updatedUser = data.user;
+        const data = await response.json()
+        console.log("Response data:", data)
+        const updatedUser = data.user
         console.log("Updated user fields:", {
           name: updatedUser.name,
           designation: updatedUser.designation,
           avatar: updatedUser.avatar,
-        });
+        })
 
         await update({
           name: updatedUser.name,
           designation: updatedUser.designation,
           avatar: updatedUser.avatar,
-        });
+        })
 
-        setName("");
-        setDesignation("");
-        setPreviewUrl(updatedUser.avatar?.url || null);
-        setAvatarFile(null);
-        setDeleteAvatar(false);
-        setSuccess("Profile updated successfully.");
-        setIsFormReset(true);
+        setName("")
+        setDesignation("")
+        setPreviewUrl(updatedUser.avatar?.url || null)
+        setAvatarFile(null)
+        setDeleteAvatar(false)
+        setSuccess("Profile updated successfully.")
+        setIsFormReset(true)
 
         setTimeout(() => {
-          setSuccess("");
-        }, 1000);
+          setSuccess("")
+        }, 1000)
       } else {
-        const errorData = await response.json();
-        console.error("Error data:", errorData);
-        setError(errorData.error || "Failed to update profile.");
+        const errorData = await response.json()
+        console.error("Error data:", errorData)
+        setError(errorData.error || "Failed to update profile.")
       }
     } catch (err) {
-      console.error("Fetch error:", err);
-      setError("Network error while updating profile.");
+      console.error("Fetch error:", err)
+      setError("Network error while updating profile.")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
-  const isDarkTheme = theme === "dark";
+  const isDarkTheme = theme === "dark"
 
   // Состояние загрузки
   if (status === "loading") {
-    console.log("Rendering loading state");
+    console.log("Rendering loading state")
     return (
       <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--background))]">
         <div className="w-16 h-16 border-4 border-indigo-700 dark:border-gray-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
-    );
+    )
   }
 
   // Если не авторизован, ничего не рендерим (редирект в useEffect)
   if (status === "unauthenticated") {
-    console.log("Rendering null for unauthenticated user");
-    return null;
+    console.log("Rendering null for unauthenticated user")
+    return null
   }
 
-  console.log("Rendering form, current state:", { name, designation, previewUrl, deleteAvatar });
+  console.log("Rendering form, current state:", {
+    name,
+    designation,
+    previewUrl,
+    deleteAvatar,
+  })
   return (
     <section className="max-w-lg mx-auto p-6 min-h-screen flex items-center justify-center bg-[rgb(var(--background))]">
       <div className="w-full border-2 border-indigo-700 dark:border-gray-600 rounded-lg px-8 py-6 space-y-5 bg-teal-100 dark:bg-gray-700 shadow-lg">
@@ -168,10 +177,14 @@ const ProfileEdit: React.FC = () => {
           <span className="special-word-1">Profile</span>
         </h1>
         {error && (
-          <div className="text-red-700 dark:text-red-400 font-medium p-2 rounded">{error}</div>
+          <div className="text-red-700 dark:text-red-400 font-medium p-2 rounded">
+            {error}
+          </div>
         )}
         {success && (
-          <div className="text-green-700 dark:text-green-400 font-medium p-2 rounded">{success}</div>
+          <div className="text-green-700 dark:text-green-400 font-medium p-2 rounded">
+            {success}
+          </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="flex flex-col items-center space-y-3">
@@ -191,7 +204,9 @@ const ProfileEdit: React.FC = () => {
             <div className="flex flex-col gap-3 w-full justify-center">
               <label
                 className="block w-full text-sm font-medium dark:font-semibold"
-                style={isDarkTheme ? { color: "rgb(var(--primary))" } : undefined}
+                style={
+                  isDarkTheme ? { color: "rgb(var(--primary))" } : undefined
+                }
               >
                 <span className="block mb-2 text-center">Upload Avatar</span>
                 <input
@@ -209,11 +224,17 @@ const ProfileEdit: React.FC = () => {
                     checked={deleteAvatar}
                     onChange={(e) => setDeleteAvatar(e.target.checked)}
                     disabled={isLoading}
-                    style={isDarkTheme ? { accentColor: "rgb(var(--primary))" } : undefined}
+                    style={
+                      isDarkTheme
+                        ? { accentColor: "rgb(var(--primary))" }
+                        : undefined
+                    }
                   />
                   <span
                     className="text-[rgb(var(--foreground))] dark:font-semibold"
-                    style={isDarkTheme ? { color: "rgb(var(--primary))" } : undefined}
+                    style={
+                      isDarkTheme ? { color: "rgb(var(--primary))" } : undefined
+                    }
                   >
                     Remove Avatar
                   </span>
@@ -269,7 +290,7 @@ const ProfileEdit: React.FC = () => {
         </form>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default ProfileEdit;
+export default ProfileEdit
