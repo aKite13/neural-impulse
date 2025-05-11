@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   ],
   robots: "index, follow",
   alternates: {
-    canonical: "http://localhost:3000",
+    canonical: "https://your-vercel-app.vercel.app",
   },
 };
 
