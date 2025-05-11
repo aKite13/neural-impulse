@@ -22,7 +22,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (status === "authenticated" && pathname === "/login") {
-      const callbackUrl = searchParams.get("callbackUrl") || "/blog" // Используем callbackUrl или /blog
+      const callbackUrl = searchParams.get("callbackUrl") || "/profile/edit" // Изменяем дефолтный редирект
       router.replace(callbackUrl)
     }
   }, [status, router, pathname, searchParams])
@@ -50,7 +50,7 @@ const LoginForm = () => {
       if (result?.error) {
         setError(result.error)
       } else {
-        const callbackUrl = searchParams.get("callbackUrl") || "/blog" // Используем callbackUrl после входа
+        const callbackUrl = searchParams.get("callbackUrl") || "/profile/edit" // Изменяем дефолтный редирект
         router.replace(callbackUrl)
       }
     } catch {
@@ -109,7 +109,10 @@ const LoginForm = () => {
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-        <p className="text-center dark:font-semibold" style={isDarkTheme ? { color: "rgb(var(--primary))" } : undefined}>
+        <p
+          className="text-center dark:font-semibold"
+          style={isDarkTheme ? { color: "rgb(var(--primary))" } : undefined}
+        >
           Don&apos;t have an account?{" "}
           <Link className="text-red-700" href="/signup">
             Sign up

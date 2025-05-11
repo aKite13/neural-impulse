@@ -24,8 +24,7 @@ const ProfileEdit: React.FC = () => {
   // Перенаправление при отсутствии авторизации
   useEffect(() => {
     if (status === "unauthenticated") {
-      console.log("User unauthenticated, redirecting to /login")
-      router.push("/login")
+      router.push("/login?callbackUrl=/profile/edit")
     }
   }, [status, router])
 
