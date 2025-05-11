@@ -76,16 +76,6 @@ const Navbar: React.FC = () => {
     router.push("/")
   }
 
-  const handleProfileClick = () => {
-    if (status === "authenticated") {
-      setShowMenu(false)
-      setShowMobileMenu(false)
-      router.push("/profile/edit")
-    } else {
-      router.push("/login?callbackUrl=/profile/edit")
-    }
-  }
-
   const renderAvatar = () => {
     if (status === "loading") {
       return <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
@@ -194,18 +184,18 @@ const Navbar: React.FC = () => {
                 </div>
                 {showMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
-                    <button
-                      onClick={handleProfileClick}
+                    <Link
+                      href="/profile/edit"
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700
                         hover:text-blue-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setShowMenu(false)}
                     >
                       Profile
-                    </button>
+                    </Link>
                     <button
                       type="button"
                       className="block w-full text-left px-4 py-2 text-sm
-											hover:text-red-700
-											 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                        hover:text-red-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                       onClick={handleLogout}
                     >
                       Logout
@@ -356,14 +346,15 @@ const Navbar: React.FC = () => {
                 >
                   Create
                 </Link>
-                <button
-                  onClick={handleProfileClick}
+                <Link
+                  href="/profile/edit"
                   className="block w-full text-left px-4 py-2 rounded-md"
                   style={
                     isDarkTheme
                       ? { color: "#a78bfa", backgroundColor: "transparent" }
                       : { color: "#8b5cf6", backgroundColor: "transparent" }
                   }
+                  onClick={closeMobileMenu}
                   onMouseOver={(e) =>
                     (e.currentTarget.style.backgroundColor = isDarkTheme
                       ? "#4b5563"
@@ -374,7 +365,7 @@ const Navbar: React.FC = () => {
                   }
                 >
                   Profile
-                </button>
+                </Link>
                 <button
                   type="button"
                   className="block w-full text-left px-4 py-2 rounded-md "
