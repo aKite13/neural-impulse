@@ -37,41 +37,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const setAuthError = (error: string | null) => setError(error);
+  const setAuthError = (error: string | null) => setError(error);  
 
-  useEffect(() => {
-    if (status === "loading") {
-      setLoading(true);
-    } else if (status === "authenticated") {
-      // Приводим session.user к типу User, добавляя id, если его нет
-      const sessionUser = session?.user as User | undefined;
-      if (sessionUser) {
-        setUser({
-          id: sessionUser._id, // Используем _id как id, если id отсутствует
-          _id: sessionUser._id,
-          name: sessionUser.name || null,
-          email: sessionUser.email || null,
-          designation: sessionUser.designation || null,
-          avatar: sessionUser.avatar || null,
-          accessToken: sessionUser.accessToken || undefined,
-        });
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    } else if (status === "unauthenticated") {
-      setUser(null);
-      setLoading(false);
-      // Исключаем редирект на /login для корневого маршрута (/)
-      if (
-        window.location.pathname !== "/login" &&
-        window.location.pathname !== "/signup" &&
-        window.location.pathname !== "/"
-      ) {
-        router.push("/login");
-      }
-    }
-  }, [status, session, router]);
+
+
+
+
+	useEffect(() => {
+		if (status === "loading") {
+			setLoading(true);
+		} else if (status === "authenticated") {
+			const sessionUser = session?.user as User | undefined;
+			console.log("AuthProvider: Authenticated, user:", sessionUser);
+			if (sessionUser) {
+				setUser({
+					id: sessionUser._id,
+					_id: sessionUser._id,
+					name: sessionUser.name || null,
+					email: sessionUser.email || null,
+					designation: sessionUser.designation || null,
+					avatar: sessionUser.avatar || null,
+					accessToken: sessionUser.accessToken || undefined,
+				});
+			} else {
+				setUser(null);
+			}
+			setLoading(false);
+		} else if (status === "unauthenticated") {
+			setUser(null);
+			setLoading(false);
+			console.log("AuthProvider: Unauthenticated, current path:", window.location.pathname);
+			if (
+				window.location.pathname !== "/login" &&
+				window.location.pathname !== "/signup" &&
+				window.location.pathname !== "/"
+			) {
+				console.log("AuthProvider: Redirecting to /login from:", window.location.pathname);
+				router.push("/login");
+			}
+		}
+	}, [status, session, router]);
+
+
+
+
+
 
   return (
     <AuthContext.Provider value={{ user, loading, error, setAuthError }}>
@@ -79,6 +89,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
+
+
+
+
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
