@@ -21,11 +21,14 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    console.log("LoginForm: Status:", status, "Pathname:", pathname);
+    console.log("LoginForm: Status:", status, "Pathname:", pathname, "SearchParams:", searchParams.toString());
     if (status === "authenticated" && pathname === "/login") {
       const callbackUrl = searchParams.get("callbackUrl") || "/blog"
       console.log("LoginForm: Authenticated, redirecting to:", callbackUrl)
       router.replace(callbackUrl)
+    }
+    if (pathname !== "/login") {
+      console.log("LoginForm: Rendered on unexpected path:", pathname);
     }
   }, [status, router, pathname, searchParams])
 
@@ -68,6 +71,11 @@ const LoginForm = () => {
   }
 
   if (status === "authenticated") {
+    return null
+  }
+
+  if (pathname !== "/login") {
+    console.log("LoginForm: Not rendering form, wrong path:", pathname);
     return null
   }
 
