@@ -22,7 +22,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (status === "authenticated" && pathname === "/login") {
-      const callbackUrl = searchParams.get("callbackUrl") || "/profile/edit" // Изменяем дефолтный редирект
+      const callbackUrl = searchParams.get("callbackUrl") || "/profile/edit"
       router.replace(callbackUrl)
     }
   }, [status, router, pathname, searchParams])
