@@ -1,4 +1,3 @@
-
 "use client"
 
 import Input from "../components/Input"
@@ -22,6 +21,7 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    console.log("LoginForm: Status:", status, "Pathname:", pathname);
     if (status === "authenticated" && pathname === "/login") {
       const callbackUrl = searchParams.get("callbackUrl") || "/blog"
       console.log("LoginForm: Authenticated, redirecting to:", callbackUrl)
