@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 
 const ProfileEdit: React.FC = () => {
   const { data: session, status, update } = useSession()
   const router = useRouter()
+  const pathname = usePathname()
   const { theme } = useTheme()
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -23,21 +24,25 @@ const ProfileEdit: React.FC = () => {
 
   // Перенаправление при отсутствии авторизации
   useEffect(() => {
+    console.log("ProfileEdit: Status:", status, "Pathname:", pathname, "Session:", session)
     if (status === "unauthenticated") {
+      console.log("ProfileEdit: Redirecting to /login?callbackUrl=/profile/edit")
       router.push("/login?callbackUrl=/profile/edit")
     }
-  }, [status, router])
+  }, [status, router, pathname, session])
 
   // Инициализация формы при загрузке сессии
   useEffect(() => {
     console.log(
-      "useEffect triggered, status:",
+      "ProfileEdit: useEffect triggered, status:",
       status,
       "isFormReset:",
-      isFormReset
+      isFormReset,
+      "Session:",
+      session
     )
-    if (session?.user && !isFormReset) {
-      console.log("Session loaded:", session)
+    if (status === "authenticated" && session?.user && !isFormReset) {
+      console.log("ProfileEdit: Session loaded:", session)
       setName(session.user.name || "")
       setDesignation(session.user.designation || "")
       setPreviewUrl(session.user.avatar?.url || null)
@@ -65,7 +70,7 @@ const ProfileEdit: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("handleSubmit called")
+    console.log("ProfileEdit: handleSubmit called")
     if (!name.trim()) {
       setError("Name is required.")
       return
@@ -86,7 +91,7 @@ const ProfileEdit: React.FC = () => {
     formData.append("designation", designation.trim())
     formData.append("deleteAvatar", deleteAvatar.toString())
 
-    console.log("Sending form data:", {
+    console.log("ProfileEdit: Sending form data:", {
       name,
       designation,
       deleteAvatar,
@@ -102,13 +107,13 @@ const ProfileEdit: React.FC = () => {
         body: formData,
       })
 
-      console.log("Response status:", response.status)
+      console.log("ProfileEdit: Response status:", response.status)
 
       if (response.ok) {
         const data = await response.json()
-        console.log("Response data:", data)
+        console.log("ProfileEdit: Response data:", data)
         const updatedUser = data.user
-        console.log("Updated user fields:", {
+        console.log("ProfileEdit: Updated user fields:", {
           name: updatedUser.name,
           designation: updatedUser.designation,
           avatar: updatedUser.avatar,
@@ -133,11 +138,11 @@ const ProfileEdit: React.FC = () => {
         }, 1000)
       } else {
         const errorData = await response.json()
-        console.error("Error data:", errorData)
+        console.error("ProfileEdit: Error data:", errorData)
         setError(errorData.error || "Failed to update profile.")
       }
     } catch (err) {
-      console.error("Fetch error:", err)
+      console.error("ProfileEdit: Fetch error:", err)
       setError("Network error while updating profile.")
     } finally {
       setIsLoading(false)
@@ -148,7 +153,7 @@ const ProfileEdit: React.FC = () => {
 
   // Состояние загрузки
   if (status === "loading") {
-    console.log("Rendering loading state")
+    console.log("ProfileEdit: Rendering loading state")
     return (
       <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--background))]">
         <div className="w-16 h-16 border-4 border-indigo-700 dark:border-gray-600 border-t-transparent rounded-full animate-spin"></div>
@@ -158,11 +163,11 @@ const ProfileEdit: React.FC = () => {
 
   // Если не авторизован, ничего не рендерим (редирект в useEffect)
   if (status === "unauthenticated") {
-    console.log("Rendering null for unauthenticated user")
+    console.log("ProfileEdit: Rendering null for unauthenticated user")
     return null
   }
 
-  console.log("Rendering form, current state:", {
+  console.log("ProfileEdit: Rendering form, current state:", {
     name,
     designation,
     previewUrl,

@@ -12,7 +12,7 @@ const LoginForm = () => {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const { theme } = useTheme()
-  const { status } = useSession()
+  const { status, data: session } = useSession()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,16 +21,15 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    console.log("LoginForm: Status:", status, "Pathname:", pathname, "SearchParams:", searchParams.toString());
+    console.log("LoginForm: Status:", status, "Pathname:", pathname, "SearchParams:", searchParams.toString(), "Session:", session)
     if (status === "authenticated" && pathname === "/login") {
       const callbackUrl = searchParams.get("callbackUrl") || "/blog"
       console.log("LoginForm: Authenticated, redirecting to:", callbackUrl)
       router.replace(callbackUrl)
+    } else if (pathname !== "/login") {
+      console.log("LoginForm: Rendered on unexpected path:", pathname)
     }
-    if (pathname !== "/login") {
-      console.log("LoginForm: Rendered on unexpected path:", pathname);
-    }
-  }, [status, router, pathname, searchParams])
+  }, [status, session, router, pathname, searchParams])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -46,16 +45,21 @@ const LoginForm = () => {
     setError("")
 
     try {
+      const callbackUrl = searchParams.get("callbackUrl") || "/blog"
       const result = await signIn("credentials", {
         email: formData.email,
         password: formData.password,
         redirect: false,
+        callbackUrl,
       })
 
+      console.log("LoginForm: signIn result:", result)
       if (result?.error) {
         setError(result.error)
+      } else if (result?.url) {
+        console.log("LoginForm: Successful login, redirecting to:", result.url)
+        router.replace(result.url)
       } else {
-        const callbackUrl = searchParams.get("callbackUrl") || "/blog"
         console.log("LoginForm: Successful login, redirecting to:", callbackUrl)
         router.replace(callbackUrl)
       }
@@ -67,15 +71,17 @@ const LoginForm = () => {
   }
 
   if (status === "loading") {
+    console.log("LoginForm: Rendering loading state")
     return <div>Loading...</div>
   }
 
   if (status === "authenticated") {
+    console.log("LoginForm: Authenticated, not rendering form on path:", pathname)
     return null
   }
 
   if (pathname !== "/login") {
-    console.log("LoginForm: Not rendering form, wrong path:", pathname);
+    console.log("LoginForm: Not rendering form, wrong path:", pathname)
     return null
   }
 
@@ -121,7 +127,7 @@ const LoginForm = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
         <p className="text-center dark:font-semibold" style={isDarkTheme ? { color: "rgb(var(--primary))" } : undefined}>
-          Don&apos;t have an account?{" "}
+          Don&rsquo;t have an account?{" "}
           <Link className="text-red-700" href="/signup">
             Sign up
           </Link>

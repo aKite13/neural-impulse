@@ -38,46 +38,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const setAuthError = (error: string | null) => setError(error)
 
-  useEffect(() => {
-    if (status === "loading") {
-      setLoading(true)
-    } else if (status === "authenticated") {
-      const sessionUser = session?.user as User | undefined
-      console.log("AuthProvider: Authenticated, user:", sessionUser)
-      if (sessionUser) {
-        setUser({
-          id: sessionUser._id,
-          _id: sessionUser._id,
-          name: sessionUser.name || null,
-          email: sessionUser.email || null,
-          designation: sessionUser.designation || null,
-          avatar: sessionUser.avatar || null,
-          accessToken: sessionUser.accessToken || undefined,
-        })
-      } else {
-        setUser(null)
-      }
-      setLoading(false)
-    } else if (status === "unauthenticated") {
-      setUser(null)
-      setLoading(false)
-      console.log(
-        "AuthProvider: Unauthenticated, current path:",
-        window.location.pathname
-      )
 
-      // Изменяем логику редиректа
-      const publicPaths = ["/login", "/signup", "/", "/blog"]
-      const currentPath = window.location.pathname
+	useEffect(() => {
+		console.log("AuthProvider: Status:", status, "Pathname:", window.location.pathname, "Session:", session)
+		if (status === "loading") {
+			setLoading(true)
+		} else if (status === "authenticated") {
+			const sessionUser = session?.user as User | undefined
+			console.log("AuthProvider: Authenticated, user:", sessionUser, "path:", window.location.pathname)
+			if (sessionUser) {
+				setUser({
+					id: sessionUser._id,
+					_id: sessionUser._id,
+					name: sessionUser.name || null,
+					email: sessionUser.email || null,
+					designation: sessionUser.designation || null,
+					avatar: sessionUser.avatar || null,
+					accessToken: sessionUser.accessToken || undefined,
+				})
+			} else {
+				setUser(null)
+			}
+			setLoading(false)
+		} else if (status === "unauthenticated") {
+			setUser(null)
+			setLoading(false)
+			console.log("AuthProvider: Unauthenticated, path:", window.location.pathname)
+			if (
+				window.location.pathname !== "/login" &&
+				window.location.pathname !== "/signup" &&
+				window.location.pathname !== "/"
+			) {
+				console.log("AuthProvider: Redirecting to /login from:", window.location.pathname)
+				router.push("/login")
+			}
+		}
+	}, [status, session, router])
 
-      if (!publicPaths.includes(currentPath)) {
-        console.log("AuthProvider: Redirecting to /login from:", currentPath)
-        // Добавляем callbackUrl для возврата на исходную страницу после логина
-        const callbackUrl = encodeURIComponent(currentPath)
-        router.push(`/login?callbackUrl=${callbackUrl}`)
-      }
-    }
-  }, [status, session, router])
+ 
+
+
+
+
 
   return (
     <AuthContext.Provider value={{ user, loading, error, setAuthError }}>
