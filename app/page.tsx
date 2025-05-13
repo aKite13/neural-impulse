@@ -13,8 +13,9 @@ export default function Home() {
             <span className="special-word-1 text-5xl">My Website</span>
           </h1>
           <p className="intro-text">
-            Hi, I&apos;m a beginner web developer
-            <br /> exploring the world of Artificial Intelligence.
+            Hi! I&apos;m a beginner web developer <br /> studying AI and using
+            vibe coding <br /> to generate code with AI based on task
+            descriptions.
             <br /> Welcome to my blog,
             <br /> where you can dive into AI topics,
             <br /> create your own posts, and share your thoughts in the
@@ -51,9 +52,9 @@ export default function Home() {
             <span className="special-word-1 text-4xl">Friend</span>
           </h2>
           <p className="intro-text mt-4">
-            WeatherFriend is your personal weather assistant.
+            Weather Friend is your personal weather assistant.
             <br /> Get real-time weather updates, personalized forecasts,
-            <br />  for your day.
+            <br /> for your day.
           </p>
 
           <WeatherFriendButton />
